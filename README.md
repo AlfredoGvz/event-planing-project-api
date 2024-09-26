@@ -21,7 +21,7 @@ Some of the services integrated into the API allow you to create an account on t
 You can obtain a copy of this repo by cloning it running the following command on your terminal:
 
 ```
-git clone https://github.com/AlfredoGvz/plan-me-api.git
+git clone https://github.com/AlfredoGvz/event-planing-project-api.git
 ```
 
 Once cloned, get into the root directory of the project and run the following command on the terminal to install the node modules:
