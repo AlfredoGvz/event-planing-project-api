@@ -1,0 +1,92 @@
+[
+  {
+    "user_id": 1,
+    "user_name": "Alice Conrado",
+    "user_email": "alice.conrado@example.com",
+    "user_fb_local_id": "IJDwEHXfTj4ut9qAblxk7eGa32w1",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 2,
+    "user_name": "Mark Anthony",
+    "user_email": "mark.anthony@example.com",
+    "user_fb_local_id": "Pb7rV3dN1eGhJw6HfMtS5UxYx4k2",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 3,
+    "user_name": "Rafael Alessandro",
+    "user_email": "rafael.alessandro@example.com",
+    "user_fb_local_id": "QLmNvV0yP8pQk7XzGhRr8eJm91t5",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 4,
+    "user_name": "Alba Martines",
+    "user_email": "alba.martines@example.com",
+    "user_fb_local_id": "4SgYp0Wj3dFxM2NcKz8q9vHfL7u1",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 5,
+    "user_name": "Fred Smith",
+    "user_email": "fred.smith@example.com",
+    "user_fb_local_id": "E3tN9hXw4yVbJ1kPz6mC5uRrG2s8",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 6,
+    "user_name": "Emily Johnson",
+    "user_email": "emily.johnson@example.com",
+    "user_fb_local_id": "Hf3pV7kNm2Yb9xQl5RzW1eJt0o4",
+    "user_role": "attendee",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 7,
+    "user_name": "James Brown",
+    "user_email": "james.brown@example.com",
+    "user_fb_local_id": "Zx7qH6tJ3mRb9kPw5YsE4uGt1v2",
+    "user_role": "attendee",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 8,
+    "user_name": "Sarah Thompson",
+    "user_email": "sarah.thompson@example.com",
+    "user_fb_local_id": "Yp2fR3lJ9vM1xKt4Wg7sZ8qHs5e",
+    "user_role": "attendee",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 9,
+    "user_name": "David Lee",
+    "user_email": "david.lee@example.com",
+    "user_fb_local_id": "M1nJ9rX3lYzK4w8qT6f5pVbGt2e",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  },
+  {
+    "user_id": 10,
+    "user_name": "Laura Scott",
+    "user_email": "laura.scott@example.com",
+    "user_fb_local_id": "U9yG7kVb3rP1qJt5Wz4m8eNs0h2",
+    "user_role": "organizer",
+    "calendar_activated": false,
+    "created_at": "2024-09-23T23:00:00.000Z"
+  }
+]
