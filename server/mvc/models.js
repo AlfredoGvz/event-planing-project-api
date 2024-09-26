@@ -76,7 +76,7 @@ async function signUpUser(user_name, user_email, password, user_role) {
     return { msg: "Verification email sent" };
   } catch (error) {
     // Handle specific Firebase authentication errors
-    console.log(error);
+    console.log(error, "line 79 models");
 
     if (error.code === "auth/missing-password") {
       return Promise.reject({

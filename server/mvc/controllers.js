@@ -45,6 +45,7 @@ async function userSignUp(req, res, next) {
     // If successful, send a success response
     res.status(200).send({ msg: newUser.msg });
   } catch (error) {
+    console.log(error, "line 48 controllers");
     next(error);
     // Log the error for debugging
   }
