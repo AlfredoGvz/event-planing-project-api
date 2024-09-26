@@ -1,4 +1,5 @@
 function customErrorHandler(error, request, response, next) {
+  console.log(error, "custom errors line 2");
   if (error.status === 400) {
     //Sign Up - Authentication
     if (error.msg === "Looks like some details are missing") {
