@@ -35,7 +35,7 @@ npm install
 This RESTful API supports standard HTTP methods like GET and DELETE. To start the server and listen for incoming requests you need to navigate to the project's root folder and run the following command:
 
 ```
-npm run server
+npm start
 ```
 
 This command is pre-configured in the scripts section of the package.json file and will launch the server on port 8080 by default. If you need to change the port, you can modify it in the listen.js file.
