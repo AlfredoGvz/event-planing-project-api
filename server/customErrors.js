@@ -1,4 +1,4 @@
-export function customErrorHandler(error, request, response, next) {
+function customErrorHandler(error, request, response, next) {
   if (error.status === 400) {
     //Sign Up - Authentication
     if (error.msg === "Looks like some details are missing") {
@@ -14,3 +14,5 @@ export function customErrorHandler(error, request, response, next) {
     }
   }
 }
+
+module.exports = customErrorHandler;

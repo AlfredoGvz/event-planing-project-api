@@ -23,7 +23,7 @@ const {
   sendToken,
   addEventToCalendar,
 } = require("./mvc/controllers.js");
-const { customErrorHandler } = require("./customErrors.js");
+const customErrorHandler = require("./customErrors.js");
 
 // ========== PING SIGNAL ==========//
 app.get("/api/ping", (req, res) => {
