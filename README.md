@@ -51,4 +51,16 @@ Using Postman or Insomnia will give you more flexibility when testing endpoints,
 
 # Database Setup
 
-This project uses PostgreSQL as the database for storing and retrieving data. You can configure the database to run locally or connect to a hosted instance. Here's how you can set up and manage the database:
+This project uses PostgreSQL as the database for storing and retrieving data. You may choose to experiment with different database systems, but bear in mind that they will have a different set up process from PostgreSQL. You can configure the Postgres database to run locally or connect to a hosted instance. Here's how you can set up and manage the database:
+
+## Locally
+
+Install PostgreSQL on your machine.
+
+1. Download and install PostgreSQL from the official website or through your package manager.
+2. Follow the installation steps and set a password for the default postgres user.
+3. You can manage your database using the SQL shell (psql) or a graphical tool like pgAdmin.
+
+## Database Cloud Hosting
+
+For deploying the database for this project, I chose Aiven, a platform that offers fully managed open-source data services in the cloud. Their [documentation](https://aiven.io/docs/get-started) is clear and easy to follow. However, you may choose a different hosting provider based on your preferences. Keep in mind that each platform will have its own setup process and pricing structure, so consider these factors when selecting your provider.
