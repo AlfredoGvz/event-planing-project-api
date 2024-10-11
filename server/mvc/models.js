@@ -308,9 +308,18 @@ async function getAllEvents(
     SELECT * FROM events
     ${whereClause}
     ORDER BY 
-      EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection},  -- Sort month
-      EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection},    -- Sort day
-      EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection}    -- Sort year
+  ${
+    orderBy === "city"
+      ? "city"
+      : orderBy === "price"
+      ? "price"
+      : orderBy === "organizer_name"
+      ? "organizer_name"
+      : `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')), 
+     EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')), 
+     EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
+  } ${sortDirection}
+
     LIMIT 10
     OFFSET $${paramIndex}
   `;
