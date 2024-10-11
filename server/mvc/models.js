@@ -196,63 +196,12 @@ async function getAllEvents(
   sortDirection = "ASC" // Default to ascending order
 ) {
   try {
-    // Validate and sanitize inputs
-    console.log(
-      organizer_id,
-      organizer_name,
-      start_time,
-      end_time,
-      date,
-      price,
-      post_code,
-      city,
-      page,
-      orderBy,
-      sortDirection,
-      "line 200 models"
-    );
-
-    if (
-      organizer_name &&
-      !validator.isLength(organizer_name, { min: 1, max: 50 })
-    ) {
-      throw new Error("Organizer name must be between 1 and 50 characters.");
-    }
-    if (
-      start_time &&
-      !validator.isTime(start_time, { hour: "2-digit", minute: "2-digit" })
-    ) {
-      throw new Error("Invalid start time format. Use HH:MM.");
-    }
-    if (
-      end_time &&
-      !validator.isTime(end_time, { hour: "2-digit", minute: "2-digit" })
-    ) {
-      throw new Error("Invalid end time format. Use HH:MM.");
-    }
-    if (date && !validator.isDate(date, { format: "DD-MM-YYYY" })) {
-      throw new Error("Invalid date format. Use DD-MM-YYYY.");
-    }
-    if (price && !validator.isFloat(price.toString(), { min: 0 })) {
-      throw new Error("Price must be a positive number.");
-    }
-    if (post_code && !validator.isLength(post_code, { min: 1, max: 10 })) {
-      throw new Error("Post code must be between 1 and 10 characters.");
-    }
-    if (city && !validator.isLength(city, { min: 1, max: 50 })) {
-      throw new Error("City must be between 1 and 50 characters.");
-    }
-    if (sortDirection !== "ASC" && sortDirection !== "DESC") {
-      throw new Error("Invalid sort direction. Use 'ASC' or 'DESC'.");
-    }
-
-    // Construct the WHERE clause based on provided filters
     // Initialize whereClauses and queryParams
     let whereClauses = [];
-    let queryParams = []; // Array to hold the parameterized values
-    let paramIndex = 1; // Keep track of the index for placeholders (e.g., $1, $2)
+    let queryParams = [];
+    let paramIndex = 1;
 
-    // Append query conditions only if parameters are provided
+    // Append conditions to whereClauses and queryParams
     if (organizer_id) {
       whereClauses.push(`organizer_id = $${paramIndex++}`);
       queryParams.push(organizer_id);
@@ -293,57 +242,72 @@ async function getAllEvents(
       queryParams.push(city);
     }
 
+    // Combine WHERE clauses
+    let whereClause =
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+    // Initialize orderByFields and process the orderBy parameter
+    let orderByFields = [];
+
+    orderBy.split(",").forEach((field) => {
+      switch (field.trim()) {
+        case "city":
+          orderByFields.push("city");
+          break;
+        case "price":
+          orderByFields.push("price");
+          break;
+        case "organizer_name":
+          orderByFields.push("organizer_name");
+          break;
+        case "date":
+          // Add date sorting based on year, month, and day
+          orderByFields.push(
+            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+            `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
+          );
+          break;
+        default:
+          console.warn(`Unsupported orderBy field: ${field}`);
+      }
+    });
+
+    // If no valid fields provided, default to sorting by date
+    if (orderByFields.length === 0) {
+      orderByFields.push(
+        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+        `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
+      );
+    }
+
+    // Join the fields into a valid SQL ORDER BY clause
+    let orderByClause = `ORDER BY ${orderByFields.join(", ")} ${sortDirection}`;
+
     // Calculate OFFSET based on the page number
     const offset = (page - 1) * 10;
-
-    // Push the OFFSET into queryParams (as the last parameter)
-    queryParams.push(offset);
-
-    // Combine all WHERE clauses with AND
-    let whereClause =
-      whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : "";
+    queryParams.push(offset); // Push offset to queryParams
 
     // Construct the final SQL query with LIMIT and OFFSET
-    const sqlGetEvents = `
-    SELECT * FROM events
-    ${whereClause}
-    ORDER BY 
-  ${
-    orderBy === "city"
-      ? "city"
-      : orderBy === "price"
-      ? "price"
-      : orderBy === "organizer_name"
-      ? "organizer_name"
-      : `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')), 
-     EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')), 
-     EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
-  } ${sortDirection}
-
-    LIMIT 10
-    OFFSET $${paramIndex}
-  `;
-    // Execute the query with queryParams (including offset)
-    const events = await db.query(sqlGetEvents, queryParams);
-
     const sqlGetAllEvents = `
       SELECT * FROM events
-       ORDER BY 
-  ${
-    orderBy === "city"
-      ? "city"
-      : orderBy === "price"
-      ? "price"
-      : orderBy === "organizer_name"
-      ? "organizer_name"
-      : `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')), 
-     EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')), 
-     EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
-  } ${sortDirection}
+      ${whereClause}
+      ${orderByClause}
+      LIMIT 10
+      OFFSET $${paramIndex} -- paramIndex points to the offset parameter
+    `;
 
-      `;
+    // Execute the query
+    const events = await db.query(sqlGetAllEvents, queryParams);
 
-    const allEvents = await db.query(sqlGetAllEvents);
+    // Optional: Execute another query without limit/offset to get all events
+    const sqlGetAllWithoutLimit = `
+      SELECT * FROM events
+      ${whereClause}
+      ${orderByClause}
+    `;
+    const allEvents = await db.query(sqlGetAllWithoutLimit);
 
     return { events: events.rows, allEvenst: allEvents.rows };
   } catch (error) {
