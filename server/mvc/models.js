@@ -249,7 +249,7 @@ async function getAllEvents(
 
     // Initialize orderByFields and process the orderBy parameter
     let orderByFields = [];
-    const sorting = orderBy.split(",");
+    const sorting = orderBy ? orderBy.split(",") : ["date"];
     console.log(sorting);
 
     sorting.forEach((field) => {
