@@ -200,6 +200,7 @@ async function getAllEvents(
     let whereClauses = [];
     let queryParams = [];
     let paramIndex = 1;
+    console.log(orderBy, "model");
 
     // Append conditions to whereClauses and queryParams
     if (organizer_id) {
