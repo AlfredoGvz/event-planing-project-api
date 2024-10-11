@@ -200,7 +200,7 @@ async function getAllEvents(
     let whereClauses = [];
     let queryParams = [];
     let paramIndex = 1;
-    console.log(orderBy.split(","), sortDirection, "model");
+    console.log(sortDirection, "model");
 
     // Append conditions to whereClauses and queryParams
     if (organizer_id) {
@@ -249,8 +249,10 @@ async function getAllEvents(
 
     // Initialize orderByFields and process the orderBy parameter
     let orderByFields = [];
+    const sorting = orderBy.split(",");
+    console.log(sorting);
 
-    orderBy.split(",").forEach((field) => {
+    sorting.forEach((field) => {
       switch (field.trim()) {
         case "city":
           orderByFields.push("city");
