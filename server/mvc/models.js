@@ -327,7 +327,21 @@ async function getAllEvents(
     const events = await db.query(sqlGetEvents, queryParams);
 
     const sqlGetAllEvents = `
-      SELECT * FROM events`;
+      SELECT * FROM events
+       ORDER BY 
+  ${
+    orderBy === "city"
+      ? "city"
+      : orderBy === "price"
+      ? "price"
+      : orderBy === "organizer_name"
+      ? "organizer_name"
+      : `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')), 
+     EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')), 
+     EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
+  } ${sortDirection}
+
+      `;
 
     const allEvents = await db.query(sqlGetAllEvents);
 
