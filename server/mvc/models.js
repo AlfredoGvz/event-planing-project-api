@@ -264,9 +264,9 @@ async function getAllEvents(
         case "date":
           // Add date sorting based on year, month, and day
           orderByFields.push(
-            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
             `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
+            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
           );
           break;
         default:
@@ -277,9 +277,9 @@ async function getAllEvents(
     // If no valid fields provided, default to sorting by date
     if (orderByFields.length === 0) {
       orderByFields.push(
-        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
         `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
+        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`,
+        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
       );
     }
 
