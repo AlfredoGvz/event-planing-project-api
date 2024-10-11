@@ -192,7 +192,7 @@ async function getAllEvents(
   post_code,
   city,
   page,
-  orderBy = "date", // Default to sorting by date
+  orderBy = [], // Default to sorting by date
   sortDirection = "ASC" // Default to ascending order
 ) {
   try {
