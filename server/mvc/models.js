@@ -192,15 +192,14 @@ async function getAllEvents(
   post_code,
   city,
   page,
-  orderBy = "date",
-  sortDirection = "ASC" // Default to ascending order
+  orderBy = "date", // Default to sorting by date if not provided
+  sortDirection = "ASC" // Default to ascending order if not provided
 ) {
   try {
     // Initialize whereClauses and queryParams
     let whereClauses = [];
     let queryParams = [];
     let paramIndex = 1;
-    console.log(sortDirection, "model");
 
     // Append conditions to whereClauses and queryParams
     if (organizer_id) {
@@ -247,10 +246,15 @@ async function getAllEvents(
     let whereClause =
       whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-    // Initialize orderByFields and process the orderBy parameter
+    // Validate and process orderBy parameter
+    if (typeof orderBy !== "string") {
+      throw new Error(
+        `Invalid orderBy parameter. Expected a string but got ${typeof orderBy}`
+      );
+    }
+
     let orderByFields = [];
-    const sorting = orderBy ? orderBy.split(",") : ["date"];
-    console.log(sorting);
+    const sorting = orderBy ? orderBy.split(",") : ["date"]; // Ensure a default sorting value
 
     sorting.forEach((field) => {
       switch (field.trim()) {
@@ -264,7 +268,6 @@ async function getAllEvents(
           orderByFields.push("organizer_name");
           break;
         case "date":
-          // Add date sorting based on year, month, and day
           orderByFields.push(
             `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
             `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
@@ -312,7 +315,7 @@ async function getAllEvents(
     `;
     const allEvents = await db.query(sqlGetAllWithoutLimit);
 
-    return { events: events.rows, allEvenst: allEvents.rows };
+    return { events: events.rows, allEvents: allEvents.rows };
   } catch (error) {
     console.error("Error during fetching events:", error.message);
     return { error: error.message }; // Sending a meaningful error message
