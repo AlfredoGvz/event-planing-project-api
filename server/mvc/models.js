@@ -192,15 +192,15 @@ async function getAllEvents(
   post_code,
   city,
   page,
-  orderBy = [], // Default to sorting by date
-  sortDirection = "ASC" // Default to ascending order
+  orderBy, // Default to sorting by date
+  sortDirection // Default to ascending order
 ) {
   try {
     // Initialize whereClauses and queryParams
     let whereClauses = [];
     let queryParams = [];
     let paramIndex = 1;
-    console.log(orderBy, sortDirection, "model");
+    console.log(orderBy.split(","), sortDirection, "model");
 
     // Append conditions to whereClauses and queryParams
     if (organizer_id) {
@@ -250,7 +250,7 @@ async function getAllEvents(
     // Initialize orderByFields and process the orderBy parameter
     let orderByFields = [];
 
-    orderBy.forEach((field) => {
+    orderBy.split(",").forEach((field) => {
       switch (field.trim()) {
         case "city":
           orderByFields.push("city");
@@ -264,9 +264,9 @@ async function getAllEvents(
         case "date":
           // Add date sorting based on year, month, and day
           orderByFields.push(
+            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
             `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
+            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
           );
           break;
         default:
@@ -277,9 +277,9 @@ async function getAllEvents(
     // If no valid fields provided, default to sorting by date
     if (orderByFields.length === 0) {
       orderByFields.push(
+        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
         `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`
+        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
       );
     }
 
