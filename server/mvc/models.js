@@ -193,7 +193,7 @@ async function getAllEvents(
   city,
   page,
   orderBy = "date",
-  sortDirection // Default to ascending order
+  sortDirection = "ASC" // Default to ascending order
 ) {
   try {
     // Initialize whereClauses and queryParams
