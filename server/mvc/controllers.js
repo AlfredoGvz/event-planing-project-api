@@ -103,6 +103,8 @@ async function getEvents(req, res) {
       post_code,
       city,
       page,
+      orderBy,
+      sortDirection,
     } = req.query;
     const allEvents = await getAllEvents(
       organizer_id,
@@ -113,7 +115,9 @@ async function getEvents(req, res) {
       price,
       post_code,
       city,
-      page
+      page,
+      orderBy,
+      sortDirection
     );
     console.log("events go here");
     res.status(200).send(allEvents);

@@ -191,7 +191,9 @@ async function getAllEvents(
   price,
   post_code,
   city,
-  page
+  page,
+  orderBy = "date", // Default to sorting by date
+  sortDirection = "ASC" // Default to ascending order
 ) {
   try {
     // Validate and sanitize inputs
@@ -204,7 +206,10 @@ async function getAllEvents(
       price,
       post_code,
       city,
-      page
+      page,
+      orderBy,
+      sortDirection,
+      "line 200 models"
     );
 
     if (
@@ -236,6 +241,9 @@ async function getAllEvents(
     }
     if (city && !validator.isLength(city, { min: 1, max: 50 })) {
       throw new Error("City must be between 1 and 50 characters.");
+    }
+    if (sortDirection !== "ASC" && sortDirection !== "DESC") {
+      throw new Error("Invalid sort direction. Use 'ASC' or 'DESC'.");
     }
 
     // Construct the WHERE clause based on provided filters
@@ -297,12 +305,15 @@ async function getAllEvents(
 
     // Construct the final SQL query with LIMIT and OFFSET
     const sqlGetEvents = `
-  SELECT * FROM events
-  ${whereClause}
-  LIMIT 10
-  OFFSET $${paramIndex}
-`;
-
+    SELECT * FROM events
+    ${whereClause}
+    ORDER BY 
+      EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection},  -- Sort month
+      EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection},    -- Sort day
+      EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY')) ${sortDirection}    -- Sort year
+    LIMIT 10
+    OFFSET $${paramIndex}
+  `;
     // Execute the query with queryParams (including offset)
     const events = await db.query(sqlGetEvents, queryParams);
 
