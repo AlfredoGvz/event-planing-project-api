@@ -250,7 +250,7 @@ async function getAllEvents(
     // Initialize orderByFields and process the orderBy parameter
     let orderByFields = [];
 
-    orderBy.split(",").forEach((field) => {
+    orderBy.forEach((field) => {
       switch (field.trim()) {
         case "city":
           orderByFields.push("city");
