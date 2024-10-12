@@ -192,8 +192,8 @@ async function getAllEvents(
   post_code,
   city,
   page,
-  orderBy = "date", // Default to sorting by date if not provided
-  sortDirection = "ASC" // Default to ascending order if not provided
+  orderBy = "date", // Default to sorting by date
+  sortDirection = "ASC" // Default to ascending order
 ) {
   try {
     // Initialize whereClauses and queryParams
@@ -242,83 +242,66 @@ async function getAllEvents(
       queryParams.push(city);
     }
 
-    // Combine WHERE clauses
+    // Calculate OFFSET based on page number
+    const offset = (page - 1) * 10;
+    queryParams.push(offset);
+
+    // Combine WHERE clauses if any
     let whereClause =
       whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-    // Validate and process orderBy parameter
-    if (typeof orderBy !== "string") {
-      throw new Error(
-        `Invalid orderBy parameter. Expected a string but got ${typeof orderBy}`
-      );
-    }
-
+    // Dynamically build the ORDER BY clause based on provided fields
     let orderByFields = [];
-    const sorting = orderBy ? orderBy.split(",") : ["date"]; // Ensure a default sorting value
 
-    sorting.forEach((field) => {
-      switch (field.trim()) {
-        case "city":
-          orderByFields.push("city");
-          break;
-        case "price":
-          orderByFields.push("price");
-          break;
-        case "organizer_name":
-          orderByFields.push("organizer_name");
-          break;
-        case "date":
-          orderByFields.push(
-            `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-            `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-            `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
-          );
-          break;
-        default:
-          console.warn(`Unsupported orderBy field: ${field}`);
-      }
-    });
+    if (orderBy === "city") {
+      orderByFields.push("city");
+    }
+    if (orderBy === "price") {
+      orderByFields.push("price");
+    }
+    if (orderBy === "organizer_name") {
+      orderByFields.push("organizer_name");
+    }
 
-    // If no valid fields provided, default to sorting by date
-    if (orderByFields.length === 0) {
+    // For the "date" field, sort by month first, then by day (adjust for DD-MM-YYYY format)
+    if (orderBy === "date" || orderByFields.length === 0) {
+      // Default to date sorting
       orderByFields.push(
-        `EXTRACT(YEAR FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-        `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`,
-        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))`
+        `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`, // Sort by month first
+        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))` // Then sort by day
       );
     }
 
-    // Join the fields into a valid SQL ORDER BY clause
-    let orderByClause = `ORDER BY ${orderByFields.join(", ")} ${sortDirection}`;
+    // Join all orderByFields with commas
+    let orderByClause =
+      orderByFields.length > 0
+        ? `ORDER BY ${orderByFields.join(", ")} ${sortDirection}`
+        : "";
 
-    // Calculate OFFSET based on the page number
-    const offset = (page - 1) * 10;
-    queryParams.push(offset); // Push offset to queryParams
+    // Construct the final SQL query
+    const sqlGetEvents = `
+    SELECT * FROM events
+    ${whereClause}
+    ${orderByClause}
+    LIMIT 10
+    OFFSET $${paramIndex}
+    `;
 
-    // Construct the final SQL query with LIMIT and OFFSET
+    // Execute the query with queryParams
+    const events = await db.query(sqlGetEvents, queryParams);
+
+    // Another query to fetch all events (without limit/offset)
     const sqlGetAllEvents = `
       SELECT * FROM events
-      ${whereClause}
-      ${orderByClause}
-      LIMIT 10
-      OFFSET $${paramIndex} -- paramIndex points to the offset parameter
-    `;
-
-    // Execute the query
-    const events = await db.query(sqlGetAllEvents, queryParams);
-
-    // Optional: Execute another query without limit/offset to get all events
-    const sqlGetAllWithoutLimit = `
-      SELECT * FROM events
-      ${whereClause}
       ${orderByClause}
     `;
-    const allEvents = await db.query(sqlGetAllWithoutLimit);
+
+    const allEvents = await db.query(sqlGetAllEvents);
 
     return { events: events.rows, allEvents: allEvents.rows };
   } catch (error) {
-    console.error("Error during fetching events:", error.message);
-    return { error: error.message }; // Sending a meaningful error message
+    console.error("Error during fetching events:", error.message, error);
+    return { error: error.message }; // Return meaningful error message
   }
 }
 
