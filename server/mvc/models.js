@@ -297,6 +297,7 @@ async function getAllEvents(
     `;
 
     const allEvents = await db.query(sqlGetAllEvents);
+    console.log("all evebts", allEvents.rows);
 
     return { events: events.rows, allEvents: allEvents.rows };
   } catch (error) {
