@@ -183,17 +183,17 @@ async function delUser() {
 
 // ========== EVENTS ==========//
 async function getAllEvents(
-  organizer_id,
-  organizer_name,
-  start_time,
-  end_time,
-  date,
-  price,
-  post_code,
-  city,
+  // organizer_id,
+  // organizer_name,
+  // start_time,
+  // end_time,
+  // date,
+  // price,
+  // post_code,
+  // city,
   page,
-  orderBy = "date", // Default to sorting by date
-  sortDirection = "ASC" // Default to ascending order
+  orderBy = "", // Default to sorting by date
+  sortDirection = "" // Default to ascending order
 ) {
   try {
     // Initialize whereClauses and queryParams
@@ -202,45 +202,45 @@ async function getAllEvents(
     let paramIndex = 1;
 
     // Append conditions to whereClauses and queryParams
-    if (organizer_id) {
-      whereClauses.push(`organizer_id = $${paramIndex++}`);
-      queryParams.push(organizer_id);
-    }
+    // if (organizer_id) {
+    //   whereClauses.push(`organizer_id = $${paramIndex++}`);
+    //   queryParams.push(organizer_id);
+    // }
 
-    if (organizer_name) {
-      whereClauses.push(`organizer_name = $${paramIndex++}`);
-      queryParams.push(organizer_name);
-    }
+    // if (organizer_name) {
+    //   whereClauses.push(`organizer_name = $${paramIndex++}`);
+    //   queryParams.push(organizer_name);
+    // }
 
-    if (start_time) {
-      whereClauses.push(`start_time = $${paramIndex++}`);
-      queryParams.push(start_time);
-    }
+    // if (start_time) {
+    //   whereClauses.push(`start_time = $${paramIndex++}`);
+    //   queryParams.push(start_time);
+    // }
 
-    if (end_time) {
-      whereClauses.push(`end_time = $${paramIndex++}`);
-      queryParams.push(end_time);
-    }
+    // if (end_time) {
+    //   whereClauses.push(`end_time = $${paramIndex++}`);
+    //   queryParams.push(end_time);
+    // }
 
-    if (date) {
-      whereClauses.push(`date = $${paramIndex++}`);
-      queryParams.push(date);
-    }
+    // if (date) {
+    //   whereClauses.push(`date = $${paramIndex++}`);
+    //   queryParams.push(date);
+    // }
 
-    if (price) {
-      whereClauses.push(`price = $${paramIndex++}`);
-      queryParams.push(price);
-    }
+    // if (price) {
+    //   whereClauses.push(`price = $${paramIndex++}`);
+    //   queryParams.push(price);
+    // }
 
-    if (post_code) {
-      whereClauses.push(`post_code = $${paramIndex++}`);
-      queryParams.push(post_code);
-    }
+    // if (post_code) {
+    //   whereClauses.push(`post_code = $${paramIndex++}`);
+    //   queryParams.push(post_code);
+    // }
 
-    if (city) {
-      whereClauses.push(`city = $${paramIndex++}`);
-      queryParams.push(city);
-    }
+    // if (city) {
+    //   whereClauses.push(`city = $${paramIndex++}`);
+    //   queryParams.push(city);
+    // }
 
     // Calculate OFFSET based on page number
     const offset = (page - 1) * 10;
@@ -251,17 +251,18 @@ async function getAllEvents(
       whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
     // Dynamically build the ORDER BY clause based on provided fields
-    let orderByFields = [];
+    // let orderByFields = [];
 
-    if (orderBy === "city") {
-      orderByFields.push("city");
-    }
-    if (orderBy === "price") {
-      orderByFields.push("price");
-    }
-    if (orderBy === "organizer_name") {
-      orderByFields.push("organizer_name");
-    }
+    // if (orderBy === "city") {
+    //   orderByFields.push("city");
+    // }
+    // if (orderBy === "price") {
+    //   orderByFields.push("price");
+    // }
+    // if (orderBy === "organizer_name") {
+    //   orderByFields.push("organizer_name");
+    // }
+    console.log(orderBy, sortDirection);
 
     // For the "date" field, sort by month first, then by day (adjust for DD-MM-YYYY format)
     if (orderBy === "date" || orderByFields.length === 0) {
@@ -464,7 +465,7 @@ async function addNewEvent(
     RETURNING *;`; // Add RETURNING * if you want to get the inserted row back
 
     const result = await db.query(queryInfo, eventValues);
-    console.log(result.rows[0], "values line 331 models");
+    console.log(result.rows[0], "added event models");
 
     return { status: 201, data: result.rows[0] };
   } catch (error) {
