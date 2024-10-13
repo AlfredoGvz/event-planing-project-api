@@ -93,32 +93,8 @@ async function userDelete(req, res) {
 
 async function getEvents(req, res) {
   try {
-    const {
-      // organizer_id,
-      // organizer_name,
-      // start_time,
-      // end_time,
-      // date,
-      // price,
-      // post_code,
-      // city,
-      page,
-      orderBy,
-      sortDirection,
-    } = req.query;
-    const allEvents = await getAllEvents(
-      // organizer_id,
-      // organizer_name,
-      // start_time,
-      // end_time,
-      // date,
-      // price,
-      // post_code,
-      // city,
-      page,
-      orderBy,
-      sortDirection
-    );
+    const { page, orderBy, sortDirection } = req.query;
+    const allEvents = await getAllEvents(page, orderBy, sortDirection);
     console.log("events go here");
     res.status(200).send(allEvents);
   } catch (error) {

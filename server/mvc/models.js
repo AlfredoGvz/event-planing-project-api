@@ -183,122 +183,57 @@ async function delUser() {
 
 // ========== EVENTS ==========//
 async function getAllEvents(
-  // organizer_id,
-  // organizer_name,
-  // start_time,
-  // end_time,
-  // date,
-  // price,
-  // post_code,
-  // city,
   page,
-  orderBy = "", // Default to sorting by date
-  sortDirection = "" // Default to ascending order
+  orderBy = [], // Default to sorting by date
+  sortDirection // Default to ascending order
 ) {
   try {
-    // Initialize whereClauses and queryParams
-    let whereClauses = [];
-    let queryParams = [];
-    let paramIndex = 1;
-
-    // Append conditions to whereClauses and queryParams
-    // if (organizer_id) {
-    //   whereClauses.push(`organizer_id = $${paramIndex++}`);
-    //   queryParams.push(organizer_id);
-    // }
-
-    // if (organizer_name) {
-    //   whereClauses.push(`organizer_name = $${paramIndex++}`);
-    //   queryParams.push(organizer_name);
-    // }
-
-    // if (start_time) {
-    //   whereClauses.push(`start_time = $${paramIndex++}`);
-    //   queryParams.push(start_time);
-    // }
-
-    // if (end_time) {
-    //   whereClauses.push(`end_time = $${paramIndex++}`);
-    //   queryParams.push(end_time);
-    // }
-
-    // if (date) {
-    //   whereClauses.push(`date = $${paramIndex++}`);
-    //   queryParams.push(date);
-    // }
-
-    // if (price) {
-    //   whereClauses.push(`price = $${paramIndex++}`);
-    //   queryParams.push(price);
-    // }
-
-    // if (post_code) {
-    //   whereClauses.push(`post_code = $${paramIndex++}`);
-    //   queryParams.push(post_code);
-    // }
-
-    // if (city) {
-    //   whereClauses.push(`city = $${paramIndex++}`);
-    //   queryParams.push(city);
-    // }
-
-    // Calculate OFFSET based on page number
+    const orderByFields = [];
+    let sqlQuery = `SELECT * FROM events;`;
+    let sqlQueryAll = `SELECT * FROM events;`;
     const offset = (page - 1) * 10;
-    queryParams.push(offset);
 
-    // Combine WHERE clauses if any
-    let whereClause =
-      whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+    // Add both sorting fields if available
+    if (orderBy.length > 0) {
+      if (orderBy.includes("city")) {
+        orderByFields.push("city"); // First sort by city
+      }
+      if (orderBy.includes("date")) {
+        orderByFields.push(`TO_DATE(date, 'DD/MM/YYYY')`); // Then sort by date
+      }
 
-    // Dynamically build the ORDER BY clause based on provided fields
-    // let orderByFields = [];
+      // Construct the SQL query with sorting, pagination, and limit
+      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )} LIMIT 10 OFFSET ${offset};`;
 
-    // if (orderBy === "city") {
-    //   orderByFields.push("city");
-    // }
-    // if (orderBy === "price") {
-    //   orderByFields.push("price");
-    // }
-    // if (orderBy === "organizer_name") {
-    //   orderByFields.push("organizer_name");
-    // }
-    console.log(orderBy, sortDirection);
-
-    // For the "date" field, sort by month first, then by day (adjust for DD-MM-YYYY format)
-    if (orderBy === "date" || orderByFields.length === 0) {
-      // Default to date sorting
-      orderByFields.push(
-        `EXTRACT(MONTH FROM TO_DATE(date, 'DD-MM-YYYY'))`, // Sort by month first
-        `EXTRACT(DAY FROM TO_DATE(date, 'DD-MM-YYYY'))` // Then sort by day
-      );
+      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )};`;
     }
 
-    // Join all orderByFields with commas
-    let orderByClause =
-      orderByFields.length > 0
-        ? `ORDER BY ${orderByFields.join(", ")} ${sortDirection}`
-        : "";
+    // Check for sorting direction
+    if (sortDirection === "ascending") {
+      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )} ASC LIMIT 10 OFFSET ${offset};`;
+      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )} ASC;`;
+    } else if (sortDirection === "descending") {
+      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )} DESC LIMIT 10 OFFSET ${offset};`;
+      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
+        ", "
+      )} DESC;`;
+    }
 
-    // Construct the final SQL query
-    const sqlGetEvents = `
-    SELECT * FROM events
-    ${whereClause}
-    ${orderByClause}
-    LIMIT 10
-    OFFSET $${paramIndex}
-    `;
+    console.log(sqlQuery);
+    console.log(sqlQueryAll, "220");
 
-    // Execute the query with queryParams
-    const events = await db.query(sqlGetEvents, queryParams);
-
-    // Another query to fetch all events (without limit/offset)
-    const sqlGetAllEvents = `
-      SELECT * FROM events
-      ${orderByClause}
-    `;
-
-    const allEvents = await db.query(sqlGetAllEvents);
-    console.log("all evebts", allEvents.rows);
+    const events = await db.query(sqlQuery);
+    const allEvents = await db.query(sqlQueryAll);
 
     return { events: events.rows, allEvents: allEvents.rows };
   } catch (error) {
