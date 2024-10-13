@@ -185,7 +185,7 @@ async function delUser() {
 async function getAllEvents(
   page,
   orderBy = [], // Default to sorting by date
-  sortDirection // Default to ascending order
+  sortDirection = "ascending" // Default to ascending order
 ) {
   try {
     const orderByFields = [];
@@ -196,38 +196,31 @@ async function getAllEvents(
     // Add both sorting fields if available
     if (orderBy.length > 0) {
       if (orderBy.includes("city")) {
-        orderByFields.push("city"); // First sort by city
+        orderByFields.push("city");
       }
       if (orderBy.includes("date")) {
-        orderByFields.push(`TO_DATE(date, 'DD/MM/YYYY')`); // Then sort by date
+        orderByFields.push(`TO_DATE(date, 'DD/MM/YYYY')`);
       }
-
-      // Construct the SQL query with sorting, pagination, and limit
-      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )} LIMIT 10 OFFSET ${offset};`;
-
-      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )};`;
     }
 
-    // Check for sorting direction
-    if (sortDirection === "ascending") {
-      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )} ASC LIMIT 10 OFFSET ${offset};`;
-      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )} ASC;`;
-    } else if (sortDirection === "descending") {
-      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )} DESC LIMIT 10 OFFSET ${offset};`;
-      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields.join(
-        ", "
-      )} DESC;`;
+    // Handle sorting direction
+    const sortDir = sortDirection === "ascending" ? "ASC" : "DESC";
+
+    // If sorting fields are specified, construct the SQL query
+    if (orderByFields.length > 0) {
+      // Ensure both fields are ordered with the specified direction
+      sqlQuery = `SELECT * FROM events ORDER BY ${orderByFields
+        .map((field) => `${field} ${sortDir}`) // Apply sorting direction to each field
+        .join(", ")} LIMIT 10 OFFSET ${offset};`;
+
+      sqlQueryAll = `SELECT * FROM events ORDER BY ${orderByFields
+        .map((field) => `${field} ${sortDir}`) // Apply sorting direction to each field
+        .join(", ")};`;
     }
+
+    // Logging for debugging
+    console.log(sqlQuery);
+    console.log(sqlQueryAll);
 
     const events = await db.query(sqlQuery);
     const allEvents = await db.query(sqlQueryAll);
