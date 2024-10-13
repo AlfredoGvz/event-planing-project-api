@@ -189,9 +189,9 @@ async function getAllEvents(
 ) {
   try {
     const orderByFields = [];
-    let sqlQuery = `SELECT * FROM events;`;
     let sqlQueryAll = `SELECT * FROM events;`;
     const offset = (page - 1) * 10;
+    let sqlQuery = `SELECT * FROM events LIMIT 10 OFFSET ${offset};`;
 
     // Add both sorting fields if available
     if (orderBy.length > 0) {
@@ -228,9 +228,6 @@ async function getAllEvents(
         ", "
       )} DESC;`;
     }
-
-    console.log(sqlQuery);
-    console.log(sqlQueryAll, "220");
 
     const events = await db.query(sqlQuery);
     const allEvents = await db.query(sqlQueryAll);
